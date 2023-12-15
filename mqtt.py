@@ -58,8 +58,8 @@ class MQTTService:
 
 		try:
 			self.client.connect(credentials.hostname, port=credentials.port, keepalive=60)
-		except ValueError:
-			logger.error("Failed to connect to MQTT, please check your environment variables.")
+		except ValueError as error:
+			logger.error(f"Failed to connect to MQTT, reason: {error}")
 
 			return False
 		else:
@@ -68,6 +68,8 @@ class MQTTService:
 			time.sleep(1)
 
 			self.publish("connected", payload="1", retain=True)
+
+		return self.is_connected()
 
 	def publish(self, path: str, payload: any, retain=True):
 		self.client.publish(f"{self.topic}/{path}",

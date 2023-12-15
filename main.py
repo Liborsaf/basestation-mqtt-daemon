@@ -1,18 +1,26 @@
 from dotenv import load_dotenv
 from loguru import logger
 
-import app
+from app import Application
 
 
 def main():
 	logger.debug("Loading env...")
 	load_dotenv()
 
-	logger.debug("Loading app...")
+	app = Application()
+
+	if not app.load():
+		logger.error("Failed to load app!")
+
+		return
+
 	try:
 		app.run()
 	except KeyboardInterrupt:
-		app.cleanup()
+		pass
+
+	app.cleanup()
 
 
 if __name__ == "__main__":

@@ -3,38 +3,46 @@ from loguru import logger
 from mqtt import MQTTCredentials, MQTTService
 from basestations import BasestationsService
 
-# TODO: Move all this to class
 
+class Application:
+	def __init__(self):
+		self.mqtt = None
+		self.basestations = None
 
-def run():
-	credentials = MQTTCredentials.load()
+	def load(self) -> bool:
+		logger.debug("Loading app...")
 
-	if not credentials.check():
-		logger.error("Failed to load credentials, please check your environment variables.")
+		credentials = MQTTCredentials.load()
 
-		return
+		if not credentials.check():
+			logger.error("Failed to load MQTT credentials, please check your environment variables.")
 
-	mqtt = MQTTService()
-	mqtt.connect(credentials)
+			return False
 
-	if not mqtt.is_connected():
-		return
+		self.mqtt = MQTTService()
 
-	basestations = BasestationsService()
+		if not self.mqtt.connect(credentials):
+			logger.error(f"Please check your environment variables.")
 
-	if not basestations.load():
-		logger.warning("No devices loaded, scanning...")
+			return False
 
-		if not basestations.discover():
-			return
+		self.basestations = BasestationsService()
 
-		basestations.test_all()
+		if not self.basestations.load():
+			logger.warning("No devices loaded, scanning...")
 
-		basestations.save()
+			if not self.basestations.discover():
+				return False
 
-	while mqtt.is_connected():
+			self.basestations.test_all()
+
+			self.basestations.save()
+
+		return True
+
+	def run(self):
+		while self.mqtt.is_connected():
+			pass
+
+	def cleanup(self):
 		pass
-
-
-def cleanup():
-	pass
