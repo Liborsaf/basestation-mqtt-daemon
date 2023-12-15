@@ -182,5 +182,25 @@ class BasestationsService:
 		logger.success("Save successful!")
 
 	def test_all(self):
+		logger.debug("Testing all basestations!")
+
 		for basestation in self.basestations:
 			basestation.test()
+
+	def turn_on_all(self):
+		logger.debug("Turning on all basestations!")
+
+		for basestation in self.basestations:
+			basestation.turn_on()
+
+	def turn_off_all(self):
+		logger.debug("Turning off all basestations!")
+
+		for basestation in self.basestations:
+			basestation.turn_off()
+
+	def identify_all(self):
+		logger.debug("Identifying all basestations!")
+
+		for basestation in self.basestations:
+			basestation.identify()

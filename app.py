@@ -38,8 +38,6 @@ class Application:
 
 			self.basestations.save()
 
-		self.basestations.basestations[0].identify()
-
 		return True
 
 	def run(self):
