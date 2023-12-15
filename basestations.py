@@ -39,17 +39,89 @@ class Basestation:
 	def is_turned_on(self) -> bool:
 		return self.device.is_turned_on()
 
+	def update_state(self) -> bool:
+		self.last_state = self.is_turned_on()
+
+		return self.last_state
+
 	def test(self) -> bool:
 		logger.info(f"Testing connection to basestation, mac: {self.device.mac}")
 
 		if self.connect():
-			self.last_state = self.is_turned_on()
+			self.update_state()
 
 			logger.success(f"Connection successful, state: {self.last_state}")
 
 			self.disconnect()
 
 			return True
+
+		return False
+
+	# TODO: Remove code duplicity
+	def turn_on(self) -> bool:
+		logger.info(f"Turning on basestation, mac: {self.device.mac}")
+
+		# TODO: Use try and finally to disconnect basestation
+
+		if self.connect():
+			# TODO: Get current state
+			prev_state = self.last_state
+
+			self.device.turn_on()
+
+			success = self.update_state() != prev_state
+
+			if success:
+				logger.success("Base stations turned on!")
+			else:
+				logger.warning("Failed to turn on basestation!")
+
+			self.disconnect()
+
+			return success
+
+		return False
+
+	def turn_off(self) -> bool:
+		logger.info(f"Turning off basestation, mac: {self.device.mac}")
+
+		if self.connect():
+			prev_state = self.last_state
+
+			self.device.turn_off()
+
+			success = self.update_state() != prev_state
+
+			if success:
+				logger.success("Base stations turned off!")
+			else:
+				logger.warning("Failed to turn off basestation!")
+
+			self.disconnect()
+
+			return success
+
+		return False
+
+	def identify(self) -> bool:
+		logger.info(f"Identifying basestation, mac: {self.device.mac}")
+
+		if self.connect():
+			prev_state = self.last_state
+
+			self.device.identify()
+
+			success = self.update_state() != prev_state
+
+			if success:
+				logger.success("Base stations identified!")
+			else:
+				logger.warning("Failed to identify basestation!")
+
+			self.disconnect()
+
+			return success
 
 		return False
 

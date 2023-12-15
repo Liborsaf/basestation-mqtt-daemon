@@ -38,6 +38,8 @@ class Application:
 
 			self.basestations.save()
 
+		self.basestations.basestations[0].turn_on()
+
 		return True
 
 	def run(self):
