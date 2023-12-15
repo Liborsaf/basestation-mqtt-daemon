@@ -62,45 +62,50 @@ class Basestation:
 	def turn_on(self) -> bool:
 		logger.info(f"Turning on basestation, mac: {self.device.mac}")
 
-		# TODO: Use try and finally to disconnect basestation
+		try:
+			if self.connect():
+				prev_state = self.update_state()
 
-		if self.connect():
-			# TODO: Get current state
-			prev_state = self.last_state
+				if prev_state:
+					logger.warning("Basestation is already on!")
 
-			self.device.turn_on()
+					return False
 
-			success = self.update_state() != prev_state
+				self.device.turn_on()
 
-			if success:
-				logger.success("Base stations turned on!")
-			else:
+				if self.update_state() != prev_state:
+					logger.success("Basestation turned on!")
+
+					return True
+
 				logger.warning("Failed to turn on basestation!")
-
+		finally:
 			self.disconnect()
-
-			return success
 
 		return False
 
 	def turn_off(self) -> bool:
 		logger.info(f"Turning off basestation, mac: {self.device.mac}")
 
-		if self.connect():
-			prev_state = self.last_state
+		try:
+			if self.connect():
+				prev_state = self.update_state()
 
-			self.device.turn_off()
+				if not prev_state:
+					logger.warning("Basestation is already off!")
 
-			success = self.update_state() != prev_state
+					return False
 
-			if success:
-				logger.success("Base stations turned off!")
-			else:
+				self.device.turn_off()
+
+				if self.update_state() != prev_state:
+					logger.success("Basestation turned off!")
+
+					return True
+
 				logger.warning("Failed to turn off basestation!")
-
+		finally:
 			self.disconnect()
-
-			return success
 
 		return False
 
@@ -108,20 +113,13 @@ class Basestation:
 		logger.info(f"Identifying basestation, mac: {self.device.mac}")
 
 		if self.connect():
-			prev_state = self.last_state
-
 			self.device.identify()
 
-			success = self.update_state() != prev_state
-
-			if success:
-				logger.success("Base stations identified!")
-			else:
-				logger.warning("Failed to identify basestation!")
+			logger.success("Basestation identified!")
 
 			self.disconnect()
 
-			return success
+			return True
 
 		return False
 

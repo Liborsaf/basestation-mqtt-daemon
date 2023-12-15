@@ -38,7 +38,7 @@ class Application:
 
 			self.basestations.save()
 
-		self.basestations.basestations[0].turn_on()
+		self.basestations.basestations[0].identify()
 
 		return True
 
