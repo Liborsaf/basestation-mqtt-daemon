@@ -1,0 +1,5 @@
+basestation
+paho-mqtt
+loguru
+json5
+python-dotenv
